@@ -3,22 +3,32 @@ import path from 'path';
 import { parseCSV, csvToHTML } from '@/lib/csvParser';
 
 export default async function BuildTimeHTML() {
-  // This would normally read from a real CSV file during build
-  const csvContent = `Name,Age,City
-John Doe,30,New York
-Jane Smith,25,Los Angeles
-Bob Johnson,35,Chicago`;
+  // Define the path to your CSV file inside the project directory
+  const filePath = path.join(process.cwd(), 'data', 'sample.csv');
 
-  const csvData = parseCSV(csvContent);
-  const tableHTML = csvToHTML(csvData);
+  try {
+    // Read the CSV file asynchronously
+    const csvContent = await fs.readFile(filePath, 'utf-8');
 
-  return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">Build-time HTML Table</h1>
-      <div 
-        className="rounded-lg border bg-card"
-        dangerouslySetInnerHTML={{ __html: tableHTML }} 
-      />
-    </div>
-  );
+    // Parse and convert CSV data into an HTML table
+    const csvData = parseCSV(csvContent);
+    const tableHTML = csvToHTML(csvData);
+
+    return (
+      <div className="container mx-auto p-8">
+        <h1 className="text-2xl font-bold mb-6">Build-time HTML Table</h1>
+        <div 
+          className="rounded-lg border bg-card"
+          dangerouslySetInnerHTML={{ __html: tableHTML }} 
+        />
+      </div>
+    );
+  } catch (error) {
+    return (
+      <div className="container mx-auto p-8">
+        <h1 className="text-2xl font-bold mb-6">Error Loading CSV</h1>
+        <p className="text-red-500">Failed to load CSV file. Ensure the file exists in the correct location.</p>
+      </div>
+    );
+  }
 }
