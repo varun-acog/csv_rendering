@@ -1,25 +1,25 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { parseCSV, csvToHTML } from '@/lib/csvParser';
+import fs from "fs/promises";
+import path from "path";
+import { parseCSV } from "@/lib/csvParser";
+import { DataTable } from "@/components/ui/data-table";
 
-export default async function BuildTimeHTML() {
-  // Path to the CSV file in the root "data/" directory
-  const filePath = path.join(process.cwd(), 'data', 'sample.csv');
+export default async function BuildTimeReact() {
+  const filePath = path.join(process.cwd(), "data", "sample.csv");
 
   try {
-    // Read the CSV file asynchronously
-    const csvContent = await fs.readFile(filePath, 'utf-8');
+    // Read the CSV file at build time
+    const csvContent = await fs.readFile(filePath, "utf-8");
 
-    // Parse and convert CSV data into an HTML table
-    const csvData = parseCSV(csvContent);
-    const tableHTML = csvToHTML(csvData);
+    // Parse CSV data
+    const data = parseCSV(csvContent);
 
     return (
       <div className="container mx-auto p-8">
-        <h1 className="text-2xl font-bold mb-6">Build-time HTML Table</h1>
-        <div 
-          className="rounded-lg border bg-card"
-          dangerouslySetInnerHTML={{ __html: tableHTML }} 
+        <h1 className="text-2xl font-bold mb-6">Build-time React Component</h1>
+        {/* Pass only serializable props */}
+        <DataTable
+          data={data}
+          title="Employee Data"
         />
       </div>
     );
@@ -27,7 +27,9 @@ export default async function BuildTimeHTML() {
     return (
       <div className="container mx-auto p-8">
         <h1 className="text-2xl font-bold mb-6">Error Loading CSV</h1>
-        <p className="text-red-500">Failed to load CSV file. Ensure the file exists in the "data/" directory.</p>
+        <p className="text-red-500">
+          Failed to load CSV file. Ensure the file exists in the correct location.
+        </p>
       </div>
     );
   }
